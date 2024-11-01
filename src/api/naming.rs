@@ -4,7 +4,6 @@ use std::{collections::HashMap, sync::Arc};
 use crate::api::plugin;
 use crate::{api::error::Result, naming::NacosNamingService};
 use serde::{Deserialize, Serialize};
-
 use super::props::ClientProps;
 
 const DEFAULT_CLUSTER_NAME: &str = "DEFAULT";
@@ -26,6 +25,8 @@ pub struct ServiceInstance {
     pub enabled: bool,
 
     pub ephemeral: bool,
+
+    pub status: Option<String>,
 
     pub cluster_name: Option<String>,
 
@@ -79,6 +80,10 @@ impl ServiceInstance {
         format!("{}:{}", &self.ip, self.port)
     }
 
+    pub fn status(&self) -> Option<&String> {
+        self.status.as_ref()
+    }
+
     pub fn is_same_instance(&self, other: &ServiceInstance) -> bool {
         self.instance_id == other.instance_id
             && self.ip == other.ip
@@ -87,6 +92,7 @@ impl ServiceInstance {
             && self.healthy == other.healthy
             && self.enabled == other.enabled
             && self.ephemeral == other.ephemeral
+            && self.status == other.status
             && self.cluster_name == other.cluster_name
             && self.service_name == other.service_name
             && self.metadata == other.metadata
@@ -106,6 +112,7 @@ impl Default for ServiceInstance {
             cluster_name: Some(DEFAULT_CLUSTER_NAME.to_owned()),
             service_name: Default::default(),
             metadata: Default::default(),
+            status: Some("UP".to_owned()),
         }
     }
 }
